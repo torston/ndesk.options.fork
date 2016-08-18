@@ -140,15 +140,15 @@ using System.Linq;
 #endif
 
 #if TEST
-using NDesk.Options;
+using NDesk.Options.Fork;
 #endif
 
 namespace Ndesk.Options.Fork
 {
     public class OptionValueCollection : IList, IList<string>
     {
-        List<string> values = new List<string>();
-        OptionContext c;
+        private readonly List<string> values = new List<string>();
+        private readonly OptionContext c;
 
         internal OptionValueCollection(OptionContext c)
         {
@@ -298,7 +298,7 @@ namespace Ndesk.Options.Fork
             if (c.Option == null)
                 throw new InvalidOperationException("OptionContext.Option is null.");
             if (index >= c.Option.MaxValueCount)
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
             if (c.Option.OptionValueType == OptionValueType.Required &&
                 index >= values.Count)
                 throw new OptionException(string.Format(
@@ -336,45 +336,21 @@ namespace Ndesk.Options.Fork
 
     public class OptionContext
     {
-        private Option option;
-        private string name;
-        private int index;
-        private OptionSet set;
-        private OptionValueCollection c;
-
         public OptionContext(OptionSet set)
         {
-            this.set = set;
-            this.c = new OptionValueCollection(this);
+            OptionSet = set;
+            OptionValues = new OptionValueCollection(this);
         }
 
-        public Option Option
-        {
-            get { return option; }
-            set { option = value; }
-        }
+        public Option Option { get; set; }
 
-        public string OptionName
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        public string OptionName { get; set; }
 
-        public int OptionIndex
-        {
-            get { return index; }
-            set { index = value; }
-        }
+        public int OptionIndex { get; set; }
 
-        public OptionSet OptionSet
-        {
-            get { return set; }
-        }
+        public OptionSet OptionSet { get; }
 
-        public OptionValueCollection OptionValues
-        {
-            get { return c; }
-        }
+        public OptionValueCollection OptionValues { get; }
     }
 
     public enum OptionValueType
@@ -386,12 +362,6 @@ namespace Ndesk.Options.Fork
 
     public abstract class Option
     {
-        string prototype, description;
-        string[] names;
-        OptionValueType type;
-        int count;
-        string[] separators;
-
         protected Option(string prototype, string description)
             : this(prototype, description, 1)
         {
@@ -400,71 +370,59 @@ namespace Ndesk.Options.Fork
         protected Option(string prototype, string description, int maxValueCount)
         {
             if (prototype == null)
-                throw new ArgumentNullException("prototype");
+                throw new ArgumentNullException(nameof(prototype));
             if (prototype.Length == 0)
-                throw new ArgumentException("Cannot be the empty string.", "prototype");
+                throw new ArgumentException("Cannot be the empty string.", nameof(prototype));
             if (maxValueCount < 0)
-                throw new ArgumentOutOfRangeException("maxValueCount");
+                throw new ArgumentOutOfRangeException(nameof(maxValueCount));
 
-            this.prototype = prototype;
-            this.names = prototype.Split('|');
-            this.description = description;
-            this.count = maxValueCount;
-            this.type = ParsePrototype();
+            Prototype = prototype;
+            Names = prototype.Split('|');
+            Description = description;
+            MaxValueCount = maxValueCount;
+            OptionValueType = ParsePrototype();
 
-            if (this.count == 0 && type != OptionValueType.None)
+            if (MaxValueCount == 0 && OptionValueType != OptionValueType.None)
                 throw new ArgumentException(
                     "Cannot provide maxValueCount of 0 for OptionValueType.Required or " +
                     "OptionValueType.Optional.",
-                    "maxValueCount");
-            if (this.type == OptionValueType.None && maxValueCount > 1)
+                    nameof(maxValueCount));
+            if (OptionValueType == OptionValueType.None && maxValueCount > 1)
                 throw new ArgumentException(
                     string.Format("Cannot provide maxValueCount of {0} for OptionValueType.None.", maxValueCount),
-                    "maxValueCount");
-            if (Array.IndexOf(names, "<>") >= 0 &&
-                ((names.Length == 1 && this.type != OptionValueType.None) ||
-                 (names.Length > 1 && this.MaxValueCount > 1)))
+                    nameof(maxValueCount));
+            if (Array.IndexOf(Names, "<>") >= 0 &&
+                ((Names.Length == 1 && OptionValueType != OptionValueType.None) ||
+                 (Names.Length > 1 && MaxValueCount > 1)))
                 throw new ArgumentException(
                     "The default option handler '<>' cannot require values.",
-                    "prototype");
+                    nameof(prototype));
         }
 
-        public string Prototype
-        {
-            get { return prototype; }
-        }
+        public string Prototype { get; }
 
-        public string Description
-        {
-            get { return description; }
-        }
+        public string Description { get; }
 
-        public OptionValueType OptionValueType
-        {
-            get { return type; }
-        }
+        public OptionValueType OptionValueType { get; }
 
-        public int MaxValueCount
-        {
-            get { return count; }
-        }
+        public int MaxValueCount { get; }
 
         public string[] GetNames()
         {
-            return (string[]) names.Clone();
+            return (string[]) Names.Clone();
         }
 
         public string[] GetValueSeparators()
         {
-            if (separators == null)
+            if (ValueSeparators == null)
                 return new string[0];
-            return (string[]) separators.Clone();
+            return (string[]) ValueSeparators.Clone();
         }
 
         protected static T Parse<T>(string value, OptionContext c)
         {
-            TypeConverter conv = TypeDescriptor.GetConverter(typeof(T));
-            T t = default(T);
+            var conv = TypeDescriptor.GetConverter(typeof(T));
+            var t = default(T);
             try
             {
                 if (value != null)
@@ -481,56 +439,50 @@ namespace Ndesk.Options.Fork
             return t;
         }
 
-        internal string[] Names
-        {
-            get { return names; }
-        }
+        internal string[] Names { get; }
 
-        internal string[] ValueSeparators
-        {
-            get { return separators; }
-        }
+        internal string[] ValueSeparators { get; private set; }
 
-        static readonly char[] NameTerminator = new char[] {'=', ':'};
+        private static readonly char[] NameTerminator = new char[] {'=', ':'};
 
         private OptionValueType ParsePrototype()
         {
-            char type = '\0';
-            List<string> seps = new List<string>();
-            for (int i = 0; i < names.Length; ++i)
+            var type = '\0';
+            var seps = new List<string>();
+            for (var i = 0; i < Names.Length; ++i)
             {
-                string name = names[i];
+                var name = Names[i];
                 if (name.Length == 0)
                     throw new ArgumentException("Empty option names are not supported.", "prototype");
 
-                int end = name.IndexOfAny(NameTerminator);
+                var end = name.IndexOfAny(NameTerminator);
                 if (end == -1)
                     continue;
-                names[i] = name.Substring(0, end);
+                Names[i] = name.Substring(0, end);
                 if (type == '\0' || type == name[end])
                     type = name[end];
                 else
                     throw new ArgumentException(
                         string.Format("Conflicting option types: '{0}' vs. '{1}'.", type, name[end]),
-                        "prototype");
+                        "protoåtype");
                 AddSeparators(name, end, seps);
             }
 
             if (type == '\0')
                 return OptionValueType.None;
 
-            if (count <= 1 && seps.Count != 0)
+            if (MaxValueCount <= 1 && seps.Count != 0)
                 throw new ArgumentException(
-                    string.Format("Cannot provide key/value separators for Options taking {0} value(s).", count),
+                    string.Format("Cannot provide key/value separators for Options taking {0} value(s).", MaxValueCount),
                     "prototype");
-            if (count > 1)
+            if (MaxValueCount > 1)
             {
                 if (seps.Count == 0)
-                    this.separators = new string[] {":", "="};
+                    ValueSeparators = new string[] {":", "="};
                 else if (seps.Count == 1 && seps[0].Length == 0)
-                    this.separators = null;
+                    ValueSeparators = null;
                 else
-                    this.separators = seps.ToArray();
+                    ValueSeparators = seps.ToArray();
             }
 
             return type == '=' ? OptionValueType.Required : OptionValueType.Optional;
@@ -538,8 +490,8 @@ namespace Ndesk.Options.Fork
 
         private static void AddSeparators(string name, int end, ICollection<string> seps)
         {
-            int start = -1;
-            for (int i = end + 1; i < name.Length; ++i)
+            var start = -1;
+            for (var i = end + 1; i < name.Length; ++i)
             {
                 switch (name[i])
                 {
@@ -589,8 +541,6 @@ namespace Ndesk.Options.Fork
     [Serializable]
     public class OptionException : Exception
     {
-        private string option;
-
         public OptionException()
         {
         }
@@ -598,54 +548,46 @@ namespace Ndesk.Options.Fork
         public OptionException(string message, string optionName)
             : base(message)
         {
-            this.option = optionName;
+            OptionName = optionName;
         }
 
         public OptionException(string message, string optionName, Exception innerException)
             : base(message, innerException)
         {
-            this.option = optionName;
+            OptionName = optionName;
         }
 
         protected OptionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            this.option = info.GetString("OptionName");
+            OptionName = info.GetString("OptionName");
         }
 
-        public string OptionName
-        {
-            get { return this.option; }
-        }
+        public string OptionName { get; }
 
         [SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("OptionName", option);
+            info.AddValue("OptionName", OptionName);
         }
     }
 
-    public delegate void OptionAction<TKey, TValue>(TKey key, TValue value);
+    public delegate void OptionAction<in TKey, in TValue>(TKey key, TValue value);
 
     public class OptionSet : KeyedCollection<string, Option>
     {
         public OptionSet()
-            : this(delegate(string f) { return f; })
+            : this(f => f)
         {
         }
 
         public OptionSet(Converter<string, string> localizer)
         {
-            this.localizer = localizer;
+            MessageLocalizer = localizer;
         }
 
-        Converter<string, string> localizer;
-
-        public Converter<string, string> MessageLocalizer
-        {
-            get { return localizer; }
-        }
+        public Converter<string, string> MessageLocalizer { get; }
 
         protected override string GetKeyForItem(Option item)
         {
@@ -662,7 +604,7 @@ namespace Ndesk.Options.Fork
         protected Option GetOptionForName(string option)
         {
             if (option == null)
-                throw new ArgumentNullException("option");
+                throw new ArgumentNullException(nameof(option));
             try
             {
                 return base[option];
@@ -682,9 +624,9 @@ namespace Ndesk.Options.Fork
         protected override void RemoveItem(int index)
         {
             base.RemoveItem(index);
-            Option p = Items[index];
+            var p = Items[index];
             // KeyedCollection.RemoveItem() handles the 0th item
-            for (int i = 1; i < p.Names.Length; ++i)
+            for (var i = 1; i < p.Names.Length; ++i)
             {
                 Dictionary.Remove(p.Names[i]);
             }
@@ -700,12 +642,12 @@ namespace Ndesk.Options.Fork
         private void AddImpl(Option option)
         {
             if (option == null)
-                throw new ArgumentNullException("option");
-            List<string> added = new List<string>(option.Names.Length);
+                throw new ArgumentNullException(nameof(option));
+            var added = new List<string>(option.Names.Length);
             try
             {
                 // KeyedCollection.InsertItem/SetItem handle the 0th name.
-                for (int i = 1; i < option.Names.Length; ++i)
+                for (var i = 1; i < option.Names.Length; ++i)
                 {
                     Dictionary.Add(option.Names[i], option);
                     added.Add(option.Names[i]);
@@ -713,7 +655,7 @@ namespace Ndesk.Options.Fork
             }
             catch (Exception)
             {
-                foreach (string name in added)
+                foreach (var name in added)
                     Dictionary.Remove(name);
                 throw;
             }
@@ -725,15 +667,15 @@ namespace Ndesk.Options.Fork
             return this;
         }
 
-        sealed class ActionOption : Option
+        private sealed class ActionOption : Option
         {
-            Action<OptionValueCollection> action;
+            private readonly Action<OptionValueCollection> action;
 
             public ActionOption(string prototype, string description, int count, Action<OptionValueCollection> action)
                 : base(prototype, description, count)
             {
                 if (action == null)
-                    throw new ArgumentNullException("action");
+                    throw new ArgumentNullException(nameof(action));
                 this.action = action;
             }
 
@@ -751,7 +693,7 @@ namespace Ndesk.Options.Fork
         public OptionSet Add(string prototype, string description, Action<string> action)
         {
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             Option p = new ActionOption(prototype, description, 1,
                 delegate(OptionValueCollection v) { action(v[0]); });
             base.Add(p);
@@ -766,22 +708,22 @@ namespace Ndesk.Options.Fork
         public OptionSet Add(string prototype, string description, OptionAction<string, string> action)
         {
             if (action == null)
-                throw new ArgumentNullException("action");
+                throw new ArgumentNullException(nameof(action));
             Option p = new ActionOption(prototype, description, 2,
                 delegate(OptionValueCollection v) { action(v[0], v[1]); });
             base.Add(p);
             return this;
         }
 
-        sealed class ActionOption<T> : Option
+        private sealed class ActionOption<T> : Option
         {
-            Action<T> action;
+            private readonly Action<T> action;
 
             public ActionOption(string prototype, string description, Action<T> action)
                 : base(prototype, description, 1)
             {
                 if (action == null)
-                    throw new ArgumentNullException("action");
+                    throw new ArgumentNullException(nameof(action));
                 this.action = action;
             }
 
@@ -791,15 +733,15 @@ namespace Ndesk.Options.Fork
             }
         }
 
-        sealed class ActionOption<TKey, TValue> : Option
+        private sealed class ActionOption<TKey, TValue> : Option
         {
-            OptionAction<TKey, TValue> action;
+            private readonly OptionAction<TKey, TValue> action;
 
             public ActionOption(string prototype, string description, OptionAction<TKey, TValue> action)
                 : base(prototype, description, 2)
             {
                 if (action == null)
-                    throw new ArgumentNullException("action");
+                    throw new ArgumentNullException(nameof(action));
                 this.action = action;
             }
 
@@ -867,12 +809,12 @@ namespace Ndesk.Options.Fork
 #else
         public List<string> Parse(IEnumerable<string> arguments)
         {
-            OptionContext c = CreateOptionContext();
+            var c = CreateOptionContext();
             c.OptionIndex = -1;
-            bool process = true;
-            List<string> unprocessed = new List<string>();
-            Option def = Contains("<>") ? this["<>"] : null;
-            foreach (string argument in arguments)
+            var process = true;
+            var unprocessed = new List<string>();
+            var def = Contains("<>") ? this["<>"] : null;
+            foreach (var argument in arguments)
             {
                 ++c.OptionIndex;
                 if (argument == "--")
@@ -914,10 +856,10 @@ namespace Ndesk.Options.Fork
             out string value)
         {
             if (argument == null)
-                throw new ArgumentNullException("argument");
+                throw new ArgumentNullException(nameof(argument));
 
             flag = name = sep = value = null;
-            Match m = ValueOption.Match(argument);
+            var m = ValueOption.Match(argument);
             if (!m.Success)
             {
                 return false;
@@ -944,10 +886,9 @@ namespace Ndesk.Options.Fork
             if (!GetOptionParts(argument, out f, out n, out s, out v))
                 return false;
 
-            Option p;
             if (Contains(n))
             {
-                p = this[n];
+                var p = this[n];
                 c.OptionName = f + n;
                 c.Option = p;
                 switch (p.OptionValueType)
@@ -960,23 +901,23 @@ namespace Ndesk.Options.Fork
                     case OptionValueType.Required:
                         ParseValue(v, c);
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(p.OptionValueType));
                 }
                 return true;
             }
             // no match; is it a bool option?
+            // ReSharper disable once ConvertIfStatementToReturnStatement
             if (ParseBool(argument, n, c))
                 return true;
             // is it a bundled option?
-            if (ParseBundledValue(f, string.Concat(n + s + v), c))
-                return true;
-
-            return false;
+            return ParseBundledValue(f, string.Concat(s, n, v), c);
         }
 
         private void ParseValue(string option, OptionContext c)
         {
             if (option != null)
-                foreach (string o in c.Option.ValueSeparators != null
+                foreach (var o in c.Option.ValueSeparators != null
                     ? option.Split(c.Option.ValueSeparators, StringSplitOptions.None)
                     : new string[] {option})
                 {
@@ -987,7 +928,7 @@ namespace Ndesk.Options.Fork
                 c.Option.Invoke(c);
             else if (c.OptionValues.Count > c.Option.MaxValueCount)
             {
-                throw new OptionException(localizer(string.Format(
+                throw new OptionException(MessageLocalizer(string.Format(
                         "Error: Found {0} option values when expecting {1}.",
                         c.OptionValues.Count, c.Option.MaxValueCount)),
                     c.OptionName);
@@ -996,39 +937,37 @@ namespace Ndesk.Options.Fork
 
         private bool ParseBool(string option, string n, OptionContext c)
         {
-            Option p;
             string rn;
-            if (n.Length >= 1 && (n[n.Length - 1] == '+' || n[n.Length - 1] == '-') &&
-                Contains((rn = n.Substring(0, n.Length - 1))))
+            if (n.Length < 1 || (n[n.Length - 1] != '+' && n[n.Length - 1] != '-') ||
+                !Contains((rn = n.Substring(0, n.Length - 1))))
             {
-                p = this[rn];
-                string v = n[n.Length - 1] == '+' ? option : null;
-                c.OptionName = option;
-                c.Option = p;
-                c.OptionValues.Add(v);
-                p.Invoke(c);
-                return true;
+                return false;
             }
-            return false;
+            var p = this[rn];
+            var v = n[n.Length - 1] == '+' ? option : null;
+            c.OptionName = option;
+            c.Option = p;
+            c.OptionValues.Add(v);
+            p.Invoke(c);
+            return true;
         }
 
         private bool ParseBundledValue(string f, string n, OptionContext c)
         {
             if (f != "-")
                 return false;
-            for (int i = 0; i < n.Length; ++i)
+            for (var i = 0; i < n.Length; ++i)
             {
-                Option p;
-                string opt = f + n[i].ToString();
-                string rn = n[i].ToString();
+                var opt = f + n[i].ToString();
+                var rn = n[i].ToString();
                 if (!Contains(rn))
                 {
                     if (i == 0)
                         return false;
-                    throw new OptionException(string.Format(localizer(
+                    throw new OptionException(string.Format(MessageLocalizer(
                         "Cannot bundle unregistered option '{0}'."), opt), opt);
                 }
-                p = this[rn];
+                var p = this[rn];
                 switch (p.OptionValueType)
                 {
                     case OptionValueType.None:
@@ -1037,7 +976,7 @@ namespace Ndesk.Options.Fork
                     case OptionValueType.Optional:
                     case OptionValueType.Required:
                     {
-                        string v = n.Substring(i + 1);
+                        var v = n.Substring(i + 1);
                         c.Option = p;
                         c.OptionName = opt;
                         ParseValue(v.Length != 0 ? v : null, c);
@@ -1062,9 +1001,9 @@ namespace Ndesk.Options.Fork
 
         public void WriteOptionDescriptions(TextWriter o)
         {
-            foreach (Option p in this)
+            foreach (var p in this)
             {
-                int written = 0;
+                var written = 0;
                 if (!WriteOptionPrototype(o, p, ref written))
                     continue;
 
@@ -1076,10 +1015,10 @@ namespace Ndesk.Options.Fork
                     o.Write(new string(' ', OptionWidth));
                 }
 
-                List<string> lines = GetLines(localizer(GetDescription(p.Description)));
+                var lines = GetLines(MessageLocalizer(GetDescription(p.Description)));
                 o.WriteLine(lines[0]);
-                string prefix = new string(' ', OptionWidth + 2);
-                for (int i = 1; i < lines.Count; ++i)
+                var prefix = new string(' ', OptionWidth + 2);
+                for (var i = 1; i < lines.Count; ++i)
                 {
                     o.Write(prefix);
                     o.WriteLine(lines[i]);
@@ -1087,11 +1026,11 @@ namespace Ndesk.Options.Fork
             }
         }
 
-        bool WriteOptionPrototype(TextWriter o, Option p, ref int written)
+        private bool WriteOptionPrototype(TextWriter o, Option p, ref int written)
         {
-            string[] names = p.Names;
+            var names = p.Names;
 
-            int i = GetNextOptionIndex(names, 0);
+            var i = GetNextOptionIndex(names, 0);
             if (i == names.Length)
                 return false;
 
@@ -1120,25 +1059,25 @@ namespace Ndesk.Options.Fork
             {
                 if (p.OptionValueType == OptionValueType.Optional)
                 {
-                    Write(o, ref written, localizer("["));
+                    Write(o, ref written, MessageLocalizer("["));
                 }
-                Write(o, ref written, localizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
-                string sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
+                Write(o, ref written, MessageLocalizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
+                var sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0
                     ? p.ValueSeparators[0]
                     : " ";
-                for (int c = 1; c < p.MaxValueCount; ++c)
+                for (var c = 1; c < p.MaxValueCount; ++c)
                 {
-                    Write(o, ref written, localizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
+                    Write(o, ref written, MessageLocalizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
                 }
                 if (p.OptionValueType == OptionValueType.Optional)
                 {
-                    Write(o, ref written, localizer("]"));
+                    Write(o, ref written, MessageLocalizer("]"));
                 }
             }
             return true;
         }
 
-        static int GetNextOptionIndex(string[] names, int i)
+        private static int GetNextOptionIndex(string[] names, int i)
         {
             while (i < names.Length && names[i] == "<>")
             {
@@ -1147,7 +1086,7 @@ namespace Ndesk.Options.Fork
             return i;
         }
 
-        static void Write(TextWriter o, ref int n, string s)
+        private static void Write(TextWriter o, ref int n, string s)
         {
             n += s.Length;
             o.Write(s);
@@ -1157,24 +1096,22 @@ namespace Ndesk.Options.Fork
         {
             if (description == null)
                 return maxIndex == 1 ? "VALUE" : "VALUE" + (index + 1);
-            string[] nameStart;
-            if (maxIndex == 1)
-                nameStart = new string[] {"{0:", "{"};
-            else
-                nameStart = new string[] {"{" + index + ":"};
-            for (int i = 0; i < nameStart.Length; ++i)
+
+            var nameStart = maxIndex == 1 ? new[] {"{0:", "{"} : new[] {"{" + index + ":"};
+
+            foreach (var str in nameStart)
             {
                 int start, j = 0;
                 do
                 {
-                    start = description.IndexOf(nameStart[i], j);
-                } while (start >= 0 && j != 0 ? description[j++ - 1] == '{' : false);
+                    start = description.IndexOf(str, j, StringComparison.Ordinal);
+                } while (start >= 0 && j != 0 && description[j++ - 1] == '{');
                 if (start == -1)
                     continue;
-                int end = description.IndexOf("}", start);
+                var end = description.IndexOf("}", start, StringComparison.Ordinal);
                 if (end == -1)
                     continue;
-                return description.Substring(start + nameStart[i].Length, end - start - nameStart[i].Length);
+                return description.Substring(start + str.Length, end - start - str.Length);
             }
             return maxIndex == 1 ? "VALUE" : "VALUE" + (index + 1);
         }
@@ -1183,9 +1120,9 @@ namespace Ndesk.Options.Fork
         {
             if (description == null)
                 return string.Empty;
-            StringBuilder sb = new StringBuilder(description.Length);
-            int start = -1;
-            for (int i = 0; i < description.Length; ++i)
+            var sb = new StringBuilder(description.Length);
+            var start = -1;
+            for (var i = 0; i < description.Length; ++i)
             {
                 switch (description[i])
                 {
@@ -1228,21 +1165,21 @@ namespace Ndesk.Options.Fork
 
         private static List<string> GetLines(string description)
         {
-            List<string> lines = new List<string>();
+            var lines = new List<string>();
             if (string.IsNullOrEmpty(description))
             {
                 lines.Add(string.Empty);
                 return lines;
             }
-            int length = 80 - OptionWidth - 2;
+            var length = 80 - OptionWidth - 2;
             int start = 0, end;
             do
             {
                 end = GetLineEnd(start, length, description);
-                bool cont = false;
+                var cont = false;
                 if (end < description.Length)
                 {
-                    char c = description[end];
+                    var c = description[end];
                     if (c == '-' || (char.IsWhiteSpace(c) && c != '\n'))
                         ++end;
                     else if (c != '\n')
@@ -1265,9 +1202,9 @@ namespace Ndesk.Options.Fork
 
         private static int GetLineEnd(int start, int length, string description)
         {
-            int end = Math.Min(start + length, description.Length);
-            int sep = -1;
-            for (int i = start; i < end; ++i)
+            var end = Math.Min(start + length, description.Length);
+            var sep = -1;
+            for (var i = start; i < end; ++i)
             {
                 switch (description[i])
                 {
