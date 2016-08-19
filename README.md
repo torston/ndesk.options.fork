@@ -27,16 +27,14 @@
  ```
 ### Parce options
 ```c#
+var unexpectedArguments = p.Parse (args);
 
-Console.WriteLine("Output: ");
-
-var argumentsThatNotParced = p.Parse (args);
-
-foreach(var arg is argumentsThatNotParced)
+foreach(var arg is unexpectedArguments)
 {
     Console.WriteLine($"Unknown argument: {arg}");
 }
  ```
+ 
 #### Command Line: 
 ```
 program.exe --name "Morty" --surname "Smith" --sex "male" -a 13
