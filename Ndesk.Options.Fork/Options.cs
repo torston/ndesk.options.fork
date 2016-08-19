@@ -1,4 +1,6 @@
-﻿// Options.cs
+﻿#region Info
+
+// Options.cs
 // Authors:
 //  Jonathan Pryor <jpryor@novell.com>
 // Copyright (C) 2008 Novell (http://www.novell.com)
@@ -96,6 +98,8 @@
 //      p.Parse (new string[]{"-a"});   // sets v != null
 //      p.Parse (new string[]{"-a+"});  // sets v != null
 //      p.Parse (new string[]{"-a-"});  // sets v == null
+
+#endregion
 
 using System;
 using System.Collections;

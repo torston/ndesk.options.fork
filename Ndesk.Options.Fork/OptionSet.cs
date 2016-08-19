@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+
 namespace Ndesk.Options.Fork
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.IO;
-    using System.Text;
-    using System.Text.RegularExpressions;
-
     public class OptionSet : KeyedCollection<string, Option>
     {
         public OptionSet()

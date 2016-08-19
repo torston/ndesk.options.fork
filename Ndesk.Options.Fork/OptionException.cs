@@ -1,9 +1,9 @@
+using System;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
+
 namespace Ndesk.Options.Fork
 {
-    using System;
-    using System.Runtime.Serialization;
-    using System.Security.Permissions;
-
     [Serializable]
     public class OptionException : Exception
     {

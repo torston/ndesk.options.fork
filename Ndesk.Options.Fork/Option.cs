@@ -1,9 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+
+
 namespace Ndesk.Options.Fork
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-
     public abstract class Option
     {
         private static readonly char[] NameTerminator = { '=', ':' };
