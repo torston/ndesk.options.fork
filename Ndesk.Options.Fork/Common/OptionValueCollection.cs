@@ -101,12 +101,12 @@
 
 #endregion
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-namespace Ndesk.Options.Fork
+namespace Ndesk.Options.Fork.Common
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+
     public class OptionValueCollection : IList, IList<string>
     {
         private readonly OptionContext c;

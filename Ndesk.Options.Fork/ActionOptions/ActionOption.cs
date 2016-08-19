@@ -2,6 +2,8 @@ namespace Ndesk.Options.Fork.ActionOptions
 {
     using System;
 
+    using Ndesk.Options.Fork.Common;
+
     internal class ActionOption : Option
     {
         private readonly Action<OptionValueCollection> action;

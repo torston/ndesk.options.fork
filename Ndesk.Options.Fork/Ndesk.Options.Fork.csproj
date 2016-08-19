@@ -42,12 +42,12 @@
     <Compile Include="ActionOptions\ActionOption`1.cs" />
     <Compile Include="ActionOptions\ActionOption`2.cs" />
     <Compile Include="Option.cs" />
-    <Compile Include="OptionAction.cs" />
-    <Compile Include="OptionContext.cs" />
-    <Compile Include="OptionException.cs" />
-    <Compile Include="Options.cs" />
+    <Compile Include="Common\OptionAction.cs" />
+    <Compile Include="Common\OptionContext.cs" />
+    <Compile Include="Common\OptionException.cs" />
+    <Compile Include="Common\OptionValueCollection.cs" />
     <Compile Include="OptionSet.cs" />
-    <Compile Include="OptionValueType.cs" />
+    <Compile Include="Common\OptionValueType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

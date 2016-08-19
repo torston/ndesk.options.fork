@@ -4,6 +4,8 @@ using System.ComponentModel;
 
 namespace Ndesk.Options.Fork
 {
+    using Ndesk.Options.Fork.Common;
+
     public abstract class Option
     {
         private static readonly char[] NameTerminator = { '=', ':' };

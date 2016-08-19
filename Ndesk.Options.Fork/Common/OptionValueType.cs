@@ -1,4 +1,4 @@
-namespace Ndesk.Options.Fork
+namespace Ndesk.Options.Fork.Common
 {
     public enum OptionValueType
     {

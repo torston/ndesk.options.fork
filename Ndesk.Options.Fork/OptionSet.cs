@@ -8,6 +8,8 @@ using Ndesk.Options.Fork.ActionOptions;
 
 namespace Ndesk.Options.Fork
 {
+    using Ndesk.Options.Fork.Common;
+
     public class OptionSet : KeyedCollection<string, Option>
     {
         private const int OptionWidth = 29;
