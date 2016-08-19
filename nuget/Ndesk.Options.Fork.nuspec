@@ -7,7 +7,7 @@
     <owners>torston</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
 	<projectUrl>https://github.com/torston/ndesk.options.fork</projectUrl>
-    <description>Simple fork of Ndesk.Options</description>
+    <description>Simple fork of NDesk.Options</description>
     <releaseNotes>Fixed bug with bundled options</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>NDesk Options Command Line Arguments Parse</tags>
@@ -15,7 +15,7 @@
     </dependencies>
   </metadata>
     <files>
-		<file src="..\Ndesk.Options.Fork\bin\$configuration$\Ndesk.Options.Fork.dll" target="lib\net45" />
-		<file src="..\Ndesk.Options.Fork\bin\$configuration$\Ndesk.Options.Fork.pdb" target="lib\net45" />
+		<file src="..\NDesk.Options.Fork\bin\$configuration$\NDesk.Options.Fork.dll" target="lib\net45" />
+		<file src="..\NDesk.Options.Fork\bin\$configuration$\NDesk.Options.Fork.pdb" target="lib\net45" />
 	</files>
 </package>
