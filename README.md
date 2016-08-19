@@ -16,16 +16,10 @@ class Test {
         int repeat = 1;
 
         var p = new OptionSet () {
-            { "n|name=", "the {NAME} of someone to greet.",
-              v => names.Add (v) },
-            { "r|repeat=", 
-                "the number of {TIMES} to repeat the greeting.\n" + 
-                    "this must be an integer.",
-              (int v) => repeat = v },
-            { "v", "increase debug message verbosity",
-              v => { if (v != null) ++verbosity; } },
-            { "h|help",  "show this message and exit", 
-              v => show_help = v != null },
+            { "n|name=", "the {NAME} of someone to greet.", v => names.Add (v) },
+            { "r|repeat=", "the number of {TIMES} to repeat the greeting.", (int v) => repeat = v },
+            { "v", "increase debug message verbosity", v => { if (v != null) ++verbosity; } },
+            { "h|help",  "show this message and exit", v => show_help = v != null },
         };
 
         List<string> extra;
@@ -89,7 +83,6 @@ If no message is specified, a generic greeting is used.
 Options:
   -n, --name=NAME            the NAME of someone to greet.
   -r, --repeat=TIMES         the number of TIMES to repeat the greeting.
-                               this must be an integer.
   -v                         increase debug message verbosity
   -h, --help                 show this message and exit
 
