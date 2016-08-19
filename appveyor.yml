@@ -11,7 +11,7 @@ build_script:
   - cmd: msbuild Ndesk.Options.Fork\Ndesk.Options.Fork.sln
   
   - cmd: ECHO GitLink Ndesk.Options.Fork\ -u https://github.com/torston/ndesk.options.fork -c %CONFIGURATION%
-  - cmd: GitLink . -u https://github.com/torston/ndesk.options.fork -c %CONFIGURATION
+  - cmd: GitLink . -u https://github.com/torston/ndesk.options.fork -c %CONFIGURATION%
   
   - cmd: ECHO nuget pack nuget\Ndesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
   - cmd: nuget pack nuget\Ndesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
