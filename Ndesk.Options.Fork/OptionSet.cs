@@ -4,11 +4,16 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using Ndesk.Options.Fork.ActionOptions;
 
 namespace Ndesk.Options.Fork
 {
     public class OptionSet : KeyedCollection<string, Option>
     {
+        private const int OptionWidth = 29;
+
+        private readonly Regex valueOption = new Regex(@"^(?<flag>--|-|/)(?<name>[^:=]+)((?<sep>[:=])(?<value>.*))?$");
+
         public OptionSet()
             : this(f => f)
         {
@@ -36,24 +41,6 @@ namespace Ndesk.Options.Fork
             // This should never happen, as it's invalid for Option to be
             // constructed w/o any names.
             throw new InvalidOperationException("Option has no names!");
-        }
-
-        [Obsolete("Use KeyedCollection.this[string]")]
-        protected Option GetOptionForName(string option)
-        {
-            if (option == null)
-            {
-                throw new ArgumentNullException("option");
-            }
-
-            try
-            {
-                return base[option];
-            }
-            catch (KeyNotFoundException)
-            {
-                return null;
-            }
         }
 
         protected override void InsertItem(int index, Option item)
@@ -115,27 +102,6 @@ namespace Ndesk.Options.Fork
             return this;
         }
 
-        private sealed class ActionOption : Option
-        {
-            private readonly Action<OptionValueCollection> action;
-
-            public ActionOption(string prototype, string description, int count, Action<OptionValueCollection> action)
-                : base(prototype, description, count)
-            {
-                if (action == null)
-                {
-                    throw new ArgumentNullException("action");
-                }
-
-                this.action = action;
-            }
-
-            protected override void OnParseComplete(OptionContext c)
-            {
-                this.action(c.OptionValues);
-            }
-        }
-
         public OptionSet Add(string prototype, Action<string> action)
         {
             return this.Add(prototype, null, action);
@@ -172,48 +138,6 @@ namespace Ndesk.Options.Fork
                 delegate(OptionValueCollection v) { action(v[0], v[1]); });
             base.Add(p);
             return this;
-        }
-
-        private sealed class ActionOption<T> : Option
-        {
-            private readonly Action<T> action;
-
-            public ActionOption(string prototype, string description, Action<T> action)
-                : base(prototype, description, 1)
-            {
-                if (action == null)
-                {
-                    throw new ArgumentNullException("action");
-                }
-
-                this.action = action;
-            }
-
-            protected override void OnParseComplete(OptionContext c)
-            {
-                this.action(Parse<T>(c.OptionValues[0], c));
-            }
-        }
-
-        private sealed class ActionOption<TKey, TValue> : Option
-        {
-            private readonly OptionAction<TKey, TValue> action;
-
-            public ActionOption(string prototype, string description, OptionAction<TKey, TValue> action)
-                : base(prototype, description, 2)
-            {
-                if (action == null)
-                {
-                    throw new ArgumentNullException("action");
-                }
-
-                this.action = action;
-            }
-
-            protected override void OnParseComplete(OptionContext c)
-            {
-                this.action(Parse<TKey>(c.OptionValues[0], c), Parse<TValue>(c.OptionValues[1], c));
-            }
         }
 
         public OptionSet Add<T>(string prototype, Action<T> action)
@@ -290,14 +214,7 @@ namespace Ndesk.Options.Fork
             c.Option.Invoke(c);
         }
 
-        private readonly Regex valueOption = new Regex(@"^(?<flag>--|-|/)(?<name>[^:=]+)((?<sep>[:=])(?<value>.*))?$");
-
-        protected bool GetOptionParts(
-            string argument,
-            out string flag,
-            out string name,
-            out string sep,
-            out string value)
+        protected bool GetOptionParts(string argument, out string flag, out string name, out string sep, out string value)
         {
             if (argument == null)
             {
@@ -375,11 +292,10 @@ namespace Ndesk.Options.Fork
         {
             if (option != null)
             {
-                foreach (
-                    var o in
-                        c.Option.ValueSeparators != null
-                            ? option.Split(c.Option.ValueSeparators, StringSplitOptions.None)
-                            : new[] { option })
+                foreach (var o in
+                    c.Option.ValueSeparators != null
+                        ? option.Split(c.Option.ValueSeparators, StringSplitOptions.None)
+                        : new[] { option })
                 {
                     c.OptionValues.Add(o);
                 }
@@ -428,7 +344,7 @@ namespace Ndesk.Options.Fork
 
             for (var i = 0; i < n.Length; ++i)
             {
-                var opt = f + n[i].ToString();
+                var opt = f + n[i];
                 var rn = n[i].ToString();
                 if (!this.Contains(rn))
                 {
@@ -474,8 +390,6 @@ namespace Ndesk.Options.Fork
             c.OptionValues.Add(value);
             option.Invoke(c);
         }
-
-        private const int OptionWidth = 29;
 
         public void WriteOptionDescriptions(TextWriter o)
         {
@@ -641,7 +555,7 @@ namespace Ndesk.Options.Fork
                     case '}':
                         if (start < 0)
                         {
-                            if ((i + 1) == description.Length || description[i + 1] != '}')
+                            if (i + 1 == description.Length || description[i + 1] != '}')
                             {
                                 throw new InvalidOperationException("Invalid option description: " + description);
                             }

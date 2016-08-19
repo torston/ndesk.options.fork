@@ -38,6 +38,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionOptions\ActionOption.cs" />
+    <Compile Include="ActionOptions\ActionOption`1.cs" />
+    <Compile Include="ActionOptions\ActionOption`2.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="OptionAction.cs" />
     <Compile Include="OptionContext.cs" />
