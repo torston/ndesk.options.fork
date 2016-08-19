@@ -2,7 +2,7 @@
 
 ## Build Status
 #### Master Branch
-[![Build status](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master?svg=true)](https://ci.appveyor.com/project/torston/ndesk-options-fork/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master?svg=true)](https://ci.appveyor.com/project/torston/ndesk-options-fork/branch/master) [![NuGet Badge](https://buildstats.info/nuget/Ndesk.Options.Fork)](https://www.nuget.org/packages/Ndesk.Options.Fork/)
 
 ## Example
 ```c#
