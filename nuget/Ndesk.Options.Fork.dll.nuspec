@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Ndesk.Options.Fork</id>
+    <version>$version$</version>
+    <authors>torston</authors>
+    <owners>torston</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Simple fork of Ndesk.Options</description>
+    <releaseNotes>Fixed bug with bundled options</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>Ndesk Options Command Line Arguments Parse</tags>
+    <dependencies>
+    </dependencies>
+  </metadata>
+    <files>
+		<file src="..\Ndesk.Options.Fork\bin\$configuration$\Ndesk.Options.Fork.dll" target="lib\net45" />
+		<file src="..\Ndesk.Options.Fork\bin\$configuration$\Ndesk.Options.Fork.pdb" target="lib\net45" />
+	</files>
+</package>
