@@ -3,9 +3,41 @@
 ## Build Status
 #### Master Branch
 [![Build status](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master?svg=true)](https://ci.appveyor.com/project/torston/ndesk-options-fork/branch/master) [![NuGet Badge](https://buildstats.info/nuget/Ndesk.Options.Fork)](https://www.nuget.org/packages/Ndesk.Options.Fork/)
+## Description
+This repository is the fork of NDesk.Options 0.2.1 (callback-based program option parser for C#).
 
+Original project link: http://www.ndesk.org/Options
+
+Original project documentation: http://www.ndesk.org/doc/ndesk-options/NDesk.Options/
 ## Quickstart
+1) Create Option Set
+```c#
+var p = new OptionSet ()
+```
+2) Add argumets
+```c#
+p.Add("s|status", n => Console.WriteLine("Status is "+ n));
+```
+3) If it find your argument the lambda will called, othewise it will return it back
+```c#
+var unexpectedArguments = p.Parce(argsArray);
 
+foreach(var arg in unexpectedArguments)
+{
+    Console.WriteLine($"Unknown argument: {arg}");
+}
+```
+Output:
+```
+> program.exe -s Ready
+Status is Ready
+> program.exe --status "Loading"
+Status is Loading
+> program.exe --anotherArgument 12
+Unknown argument: --anotherArgument
+Unknown argument: 12
+```
+## Getting Deeper 
 ### Define options
 ```c#
  var p = new OptionSet ()
@@ -29,7 +61,7 @@
 ```c#
 var unexpectedArguments = p.Parse (args);
 
-foreach(var arg is unexpectedArguments)
+foreach(var arg in unexpectedArguments)
 {
     Console.WriteLine($"Unknown argument: {arg}");
 }
