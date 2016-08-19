@@ -78,7 +78,6 @@ Unknown argument: --sex
 Unknown argument: male
 ```
  
-
 ## Example
 ```c#
 using System;
