@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Ndesk.Options.Fork</id>
+    <id>NDesk.Options.Fork</id>
     <version>$version$</version>
     <authors>torston</authors>
     <owners>torston</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+	<projectUrl>https://github.com/torston/ndesk.options.fork</projectUrl>
     <description>Simple fork of Ndesk.Options</description>
     <releaseNotes>Fixed bug with bundled options</releaseNotes>
     <copyright>Copyright 2016</copyright>
