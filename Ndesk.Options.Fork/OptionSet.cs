@@ -8,6 +8,8 @@ using Ndesk.Options.Fork.ActionOptions;
 
 namespace Ndesk.Options.Fork
 {
+    using System.Linq;
+
     using Ndesk.Options.Fork.Common;
 
     public class OptionSet : KeyedCollection<string, Option>
@@ -191,7 +193,20 @@ namespace Ndesk.Options.Fork
 
                 if (!this.Parse(argument, c))
                 {
-                    Unprocessed(unprocessed, def, c, argument);
+                    // is it a bundled option?
+                    var collection = this.ParceBundle(argument, c);
+
+                    if (collection == null)
+                    {
+                        Unprocessed(unprocessed, def, c, argument);
+                    }
+                    else
+                    {
+                        foreach (var pair in collection.Where(pair => !pair.Value))
+                        {
+                            Unprocessed(unprocessed, def, c, pair.Key);
+                        }
+                    }
                 }
             }
 
@@ -281,13 +296,58 @@ namespace Ndesk.Options.Fork
 
             // no match; is it a bool option?
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (this.ParseBool(argument, n, c))
+            return this.ParseBool(argument, n, c);
+        }
+
+        private Dictionary<string, bool> ParceBundle(string argument, OptionContext c)
+        {
+            string f, n, s, v;
+            var result = new Dictionary<string,bool>();
+
+            if (!this.GetOptionParts(argument, out f, out n, out s, out v))
             {
-                return true;
+                return null;
             }
 
-            // is it a bundled option?
-            return this.ParseBundledValue(f, string.Concat(s, n, v), c);
+            if (f != "-")
+            {
+                return null;
+            }
+
+            for (var i = 0; i < n.Length; ++i)
+            {
+                var opt = f + n[i];
+                var rn = n[i].ToString();
+                if (!this.Contains(rn))
+                {
+                    result.Add(opt,false);
+                    continue;
+                }
+
+                var p = this[rn];
+                switch (p.OptionValueType)
+                {
+                    case OptionValueType.None:
+                        Invoke(c, opt, n, p);
+                        result.Add(opt, true);
+                        break;
+
+                    case OptionValueType.Optional:
+                    case OptionValueType.Required:
+                        {
+                            var option = n.Substring(i + 1);
+                            c.Option = p;
+                            c.OptionName = opt;
+                            this.ParseValue(option.Length != 0 ? option : null, c);
+                            result.Add(opt, true);
+                        }
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Unknown OptionValueType: " + p.OptionValueType);
+                }
+            }
+            return result;
         }
 
         private void ParseValue(string option, OptionContext c)
@@ -334,54 +394,6 @@ namespace Ndesk.Options.Fork
             c.Option = p;
             c.OptionValues.Add(v);
             p.Invoke(c);
-            return true;
-        }
-
-        private bool ParseBundledValue(string f, string n, OptionContext c)
-        {
-            if (f != "-")
-            {
-                return false;
-            }
-
-            for (var i = 0; i < n.Length; ++i)
-            {
-                var opt = f + n[i];
-                var rn = n[i].ToString();
-                if (!this.Contains(rn))
-                {
-                    if (i == 0)
-                    {
-                        return false;
-                    }
-
-                    throw new OptionException(
-                        string.Format(this.MessageLocalizer("Cannot bundle unregistered option '{0}'."), opt),
-                        opt);
-                }
-
-                var p = this[rn];
-                switch (p.OptionValueType)
-                {
-                    case OptionValueType.None:
-                        Invoke(c, opt, n, p);
-                        break;
-
-                    case OptionValueType.Optional:
-                    case OptionValueType.Required:
-                        {
-                            var v = n.Substring(i + 1);
-                            c.Option = p;
-                            c.OptionName = opt;
-                            this.ParseValue(v.Length != 0 ? v : null, c);
-                            return true;
-                        }
-
-                    default:
-                        throw new InvalidOperationException("Unknown OptionValueType: " + p.OptionValueType);
-                }
-            }
-
             return true;
         }
 
