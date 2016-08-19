@@ -8,7 +8,7 @@
 ```c#
 using System;
 using System.Collections.Generic;
-using NDesk.Options;
+using NDesk.Options.Fork;
 
 class Test {
     static int verbosity;
