@@ -4,6 +4,51 @@
 #### Master Branch
 [![Build status](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master?svg=true)](https://ci.appveyor.com/project/torston/ndesk-options-fork/branch/master) [![NuGet Badge](https://buildstats.info/nuget/Ndesk.Options.Fork)](https://www.nuget.org/packages/Ndesk.Options.Fork/)
 
+## Quickstart
+
+### Define options
+```c#
+ var p = new OptionSet ()
+ 
+ // You can call: -n "Rick" or --name "Morty"
+ p.Add("n|name", n => Console.WriteLine(n));
+ 
+ // You can call only with long argument: --name "Morty"
+ p.Add("name", n => Console.WriteLine("First Name: " + n));
+ 
+ // If you use '=' parametr is required: -s "Sanchez"
+  p.Add("s|surname=", a => Console.WriteLine("Last Name:" + a));
+  
+  // Bool options usage: -s
+  p.Add("s|isSmart", s => Console.WriteLine(s != null));
+  
+  // Int options usage: -a 11
+  p.Add("a|age", (int a) => Console.WriteLine("Age: " + s));
+ ```
+### Parce options
+```c#
+
+Console.WriteLine("Output: ");
+
+var argumentsThatNotParced = p.Parse (args);
+
+foreach(var arg is argumentsThatNotParced)
+{
+    Console.WriteLine($"Unknown argument: {arg}");
+}
+ ```
+#### Command Line: 
+```
+program.exe --name "Morty" --surname "Smith" --sex "male" -a 13
+ 
+First Name: Morty
+Last Name: Smith
+Age: 13
+Unknown argument: --sex
+Unknown argument: male
+```
+ 
+
 ## Example
 ```c#
 using System;
