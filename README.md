@@ -1,5 +1,9 @@
 # Ndesk.Options.Fork
 
+## Build Status
+#### Master Branch
+[![Build status](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master?svg=true)](https://ci.appveyor.com/project/torston/ndesk-options-fork/branch/master)
+
 ## Example
 ```c#
 using System;
