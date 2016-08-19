@@ -38,7 +38,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Option.cs" />
+    <Compile Include="OptionAction.cs" />
+    <Compile Include="OptionContext.cs" />
+    <Compile Include="OptionException.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="OptionSet.cs" />
+    <Compile Include="OptionValueType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
