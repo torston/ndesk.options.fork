@@ -4,14 +4,12 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Ndesk.Options.Fork.ActionOptions;
+using System.Linq;
+using NDesk.Options.Fork.Common;
+using NDesk.Options.Fork.ActionOptions;
 
-namespace Ndesk.Options.Fork
+namespace NDesk.Options.Fork
 {
-    using System.Linq;
-
-    using Ndesk.Options.Fork.Common;
-
     public class OptionSet : KeyedCollection<string, Option>
     {
         private const int OptionWidth = 29;

@@ -10,7 +10,7 @@
     <description>Simple fork of Ndesk.Options</description>
     <releaseNotes>Fixed bug with bundled options</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <tags>Ndesk Options Command Line Arguments Parse</tags>
+    <tags>NDesk Options Command Line Arguments Parse</tags>
     <dependencies>
     </dependencies>
   </metadata>

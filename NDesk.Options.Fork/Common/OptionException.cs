@@ -1,4 +1,4 @@
-namespace Ndesk.Options.Fork.Common
+namespace NDesk.Options.Fork.Common
 {
     using System;
     using System.Runtime.Serialization;

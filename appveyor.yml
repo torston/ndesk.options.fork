@@ -5,14 +5,14 @@ install:
 configuration: Release
 
 build_script:
-  - cmd: nuget restore Ndesk.Options.Fork\Ndesk.Options.Fork.sln
+  - cmd: nuget restore NDesk.Options.Fork\NDesk.Options.Fork.sln
   - cmd: gitversion /l console /output buildserver /updateAssemblyInfo
   
-  - cmd: msbuild Ndesk.Options.Fork\Ndesk.Options.Fork.sln
+  - cmd: msbuild NDesk.Options.Fork\NDesk.Options.Fork.sln
   
-  - cmd: ECHO GitLink Ndesk.Options.Fork\ -u https://github.com/torston/ndesk.options.fork -c %CONFIGURATION%
-  - cmd: GitLink . -u https://github.com/torston/ndesk.options.fork -c %CONFIGURATION%
+  - cmd: ECHO GitLink NDesk.Options.Fork\ -u https://github.com/torston/NDesk.options.fork -c %CONFIGURATION%
+  - cmd: GitLink . -u https://github.com/torston/NDesk.options.fork -c %CONFIGURATION%
   
-  - cmd: ECHO nuget pack nuget\Ndesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
-  - cmd: nuget pack nuget\Ndesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
-  - cmd: appveyor PushArtifact "Ndesk.Options.Fork.%GitVersion_NuGetVersion%.nupkg"
+  - cmd: ECHO nuget pack nuget\NDesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
+  - cmd: nuget pack nuget\NDesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
+  - cmd: appveyor PushArtifact "NDesk.Options.Fork.%GitVersion_NuGetVersion%.nupkg"

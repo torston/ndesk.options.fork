@@ -1,4 +1,4 @@
-# Ndesk.Options.Fork
+# NDesk.Options.Fork
 
 ## Build Status
 #### Master Branch

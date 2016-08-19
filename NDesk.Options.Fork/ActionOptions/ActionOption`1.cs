@@ -1,8 +1,7 @@
-namespace Ndesk.Options.Fork.ActionOptions
+namespace NDesk.Options.Fork.ActionOptions
 {
     using System;
-
-    using Ndesk.Options.Fork.Common;
+    using NDesk.Options.Fork.Common;
 
     internal class ActionOption<T> : Option
     {

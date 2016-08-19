@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-
-namespace Ndesk.Options.Fork
+namespace NDesk.Options.Fork
 {
-    using Ndesk.Options.Fork.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using NDesk.Options.Fork.Common;
 
     public abstract class Option
     {
