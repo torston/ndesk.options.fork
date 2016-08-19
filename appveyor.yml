@@ -10,8 +10,8 @@ build_script:
   
   - cmd: msbuild NDesk.Options.Fork\NDesk.Options.Fork.sln
   
-  - cmd: ECHO GitLink NDesk.Options.Fork\ -u https://github.com/torston/NDesk.options.fork -c %CONFIGURATION%
-  - cmd: GitLink . -u https://github.com/torston/NDesk.options.fork -c %CONFIGURATION%
+  - cmd: ECHO GitLink NDesk.Options.Fork\ -u https://github.com/torston/ndesk.options.fork -c %CONFIGURATION%
+  - cmd: GitLink . -u https://github.com/torston/ndesk.options.fork -c %CONFIGURATION%
   
   - cmd: ECHO nuget pack nuget\NDesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
   - cmd: nuget pack nuget\NDesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
