@@ -27,6 +27,7 @@ foreach(var arg in unexpectedArguments)
     Console.WriteLine($"Unknown argument: {arg}");
 }
 ```
+ 
 Output:
 ```
 > program.exe -s Ready
