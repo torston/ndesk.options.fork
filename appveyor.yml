@@ -1,8 +1,12 @@
+install:
+  - choco install gitversion.portable -pre -y
+  - choco install gitlink -y
+
 configuration: Release
 
-before_build:
-  - nuget restore
-
-build:
-  verbosity: minimal
-  publish_wap: true
+build_script:
+  - cmd: nuget restore Ndesk.Options.Fork\Ndesk.Options.Fork.sln
+  - cmd: gitversion /l console /output buildserver /updateAssemblyInfo
+  
+  - cmd: msbuild Ndesk.Options.Fork\Ndesk.Options.Fork.sln
+  
