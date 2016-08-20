@@ -122,7 +122,7 @@ namespace NDesk.Options.Fork.Common
         {
             get
             {
-                return this.values.Count;
+                return values.Count;
             }
         }
 
@@ -146,7 +146,7 @@ namespace NDesk.Options.Fork.Common
         {
             get
             {
-                return (this.values as ICollection).IsSynchronized;
+                return (values as ICollection).IsSynchronized;
             }
         }
 
@@ -154,7 +154,7 @@ namespace NDesk.Options.Fork.Common
         {
             get
             {
-                return (this.values as ICollection).SyncRoot;
+                return (values as ICollection).SyncRoot;
             }
         }
 
@@ -162,13 +162,13 @@ namespace NDesk.Options.Fork.Common
         {
             get
             {
-                this.AssertValid(index);
-                return index >= this.values.Count ? null : this.values[index];
+                AssertValid(index);
+                return index >= values.Count ? null : values[index];
             }
 
             set
             {
-                this.values[index] = value;
+                values[index] = value;
             }
         }
 
@@ -181,129 +181,129 @@ namespace NDesk.Options.Fork.Common
 
             set
             {
-                (this.values as IList)[index] = value;
+                (values as IList)[index] = value;
             }
         }
 
         public void Add(string item)
         {
-            this.values.Add(item);
+            values.Add(item);
         }
 
         public void Clear()
         {
-            this.values.Clear();
+            values.Clear();
         }
 
         public bool Contains(string item)
         {
-            return this.values.Contains(item);
+            return values.Contains(item);
         }
 
         public void CopyTo(string[] array, int arrayIndex)
         {
-            this.values.CopyTo(array, arrayIndex);
+            values.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<string> GetEnumerator()
         {
-            return this.values.GetEnumerator();
+            return values.GetEnumerator();
         }
 
         public int IndexOf(string item)
         {
-            return this.values.IndexOf(item);
+            return values.IndexOf(item);
         }
 
         public void Insert(int index, string item)
         {
-            this.values.Insert(index, item);
+            values.Insert(index, item);
         }
 
         public bool Remove(string item)
         {
-            return this.values.Remove(item);
+            return values.Remove(item);
         }
 
         public void RemoveAt(int index)
         {
-            this.values.RemoveAt(index);
+            values.RemoveAt(index);
         }
 
         public string[] ToArray()
         {
-            return this.values.ToArray();
+            return values.ToArray();
         }
 
         public List<string> ToList()
         {
-            return new List<string>(this.values);
+            return new List<string>(values);
         }
 
         public override string ToString()
         {
-            return string.Join(", ", this.values.ToArray());
+            return string.Join(", ", values.ToArray());
         }
 
         int IList.Add(object value)
         {
-            return (this.values as IList).Add(value);
+            return (values as IList).Add(value);
         }
 
         bool IList.Contains(object value)
         {
-            return (this.values as IList).Contains(value);
+            return (values as IList).Contains(value);
         }
 
         void ICollection.CopyTo(Array array, int index)
         {
-            (this.values as ICollection).CopyTo(array, index);
+            (values as ICollection).CopyTo(array, index);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.values.GetEnumerator();
+            return values.GetEnumerator();
         }
 
         int IList.IndexOf(object value)
         {
-            return (this.values as IList).IndexOf(value);
+            return (values as IList).IndexOf(value);
         }
 
         void IList.Insert(int index, object value)
         {
-            (this.values as IList).Insert(index, value);
+            (values as IList).Insert(index, value);
         }
 
         void IList.Remove(object value)
         {
-            (this.values as IList).Remove(value);
+            (values as IList).Remove(value);
         }
 
         void IList.RemoveAt(int index)
         {
-            (this.values as IList).RemoveAt(index);
+            (values as IList).RemoveAt(index);
         }
 
         private void AssertValid(int index)
         {
-            if (this.c.Option == null)
+            if (c.Option == null)
             {
                 throw new InvalidOperationException("OptionContext.Option is null.");
             }
 
-            if (index >= this.c.Option.MaxValueCount)
+            if (index >= c.Option.MaxValueCount)
             {
                 throw new ArgumentOutOfRangeException("index");
             }
 
-            if (this.c.Option.OptionValueType == OptionValueType.Required && index >= this.values.Count)
+            if (c.Option.OptionValueType == OptionValueType.Required && index >= values.Count)
             {
                 throw new OptionException(
                     string.Format(
-                        this.c.OptionSet.MessageLocalizer("Missing required value for option '{0}'."),
-                        this.c.OptionName),
-                    this.c.OptionName);
+                        c.OptionSet.MessageLocalizer("Missing required value for option '{0}'."),
+                        c.OptionName),
+                    c.OptionName);
             }
         }
     }

@@ -4,8 +4,8 @@
     {
         public OptionContext(OptionSet set)
         {
-            this.OptionSet = set;
-            this.OptionValues = new OptionValueCollection(this);
+            OptionSet = set;
+            OptionValues = new OptionValueCollection(this);
         }
 
         public Option Option { get; set; }

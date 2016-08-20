@@ -3,7 +3,7 @@ namespace NDesk.Options.Fork
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using NDesk.Options.Fork.Common;
+    using Common;
 
     public abstract class Option
     {
@@ -31,29 +31,29 @@ namespace NDesk.Options.Fork
                 throw new ArgumentOutOfRangeException("maxValueCount");
             }
 
-            this.Prototype = prototype;
-            this.Names = prototype.Split('|');
-            this.Description = description;
-            this.MaxValueCount = maxValueCount;
-            this.OptionValueType = this.ParsePrototype();
+            Prototype = prototype;
+            Names = prototype.Split('|');
+            Description = description;
+            MaxValueCount = maxValueCount;
+            OptionValueType = ParsePrototype();
 
-            if (this.MaxValueCount == 0 && this.OptionValueType != OptionValueType.None)
+            if (MaxValueCount == 0 && OptionValueType != OptionValueType.None)
             {
                 throw new ArgumentException(
                     "Cannot provide maxValueCount of 0 for OptionValueType.Required or " + "OptionValueType.Optional.",
                     "maxValueCount");
             }
 
-            if (this.OptionValueType == OptionValueType.None && maxValueCount > 1)
+            if (OptionValueType == OptionValueType.None && maxValueCount > 1)
             {
                 throw new ArgumentException(
                     string.Format("Cannot provide maxValueCount of {0} for OptionValueType.None.", maxValueCount),
                     "maxValueCount");
             }
 
-            if (Array.IndexOf(this.Names, "<>") >= 0
-                && ((this.Names.Length == 1 && this.OptionValueType != OptionValueType.None)
-                    || (this.Names.Length > 1 && this.MaxValueCount > 1)))
+            if (Array.IndexOf(Names, "<>") >= 0
+                && ((Names.Length == 1 && OptionValueType != OptionValueType.None)
+                    || (Names.Length > 1 && MaxValueCount > 1)))
             {
                 throw new ArgumentException("The default option handler '<>' cannot require values.", "prototype");
             }
@@ -73,22 +73,22 @@ namespace NDesk.Options.Fork
 
         public string[] GetNames()
         {
-            return (string[])this.Names.Clone();
+            return (string[])Names.Clone();
         }
 
         public string[] GetValueSeparators()
         {
-            if (this.ValueSeparators == null)
+            if (ValueSeparators == null)
             {
                 return new string[0];
             }
 
-            return (string[])this.ValueSeparators.Clone();
+            return (string[])ValueSeparators.Clone();
         }
 
         public void Invoke(OptionContext c)
         {
-            this.OnParseComplete(c);
+            OnParseComplete(c);
             c.OptionName = null;
             c.Option = null;
             c.OptionValues.Clear();
@@ -96,7 +96,7 @@ namespace NDesk.Options.Fork
 
         public override string ToString()
         {
-            return this.Prototype;
+            return Prototype;
         }
 
         protected static T Parse<T>(string value, OptionContext c)
@@ -178,9 +178,9 @@ namespace NDesk.Options.Fork
         {
             var type = '\0';
             var seps = new List<string>();
-            for (var i = 0; i < this.Names.Length; ++i)
+            for (var i = 0; i < Names.Length; ++i)
             {
-                var name = this.Names[i];
+                var name = Names[i];
                 if (name.Length == 0)
                 {
                     throw new ArgumentException("Empty option names are not supported.");
@@ -192,7 +192,7 @@ namespace NDesk.Options.Fork
                     continue;
                 }
 
-                this.Names[i] = name.Substring(0, end);
+                Names[i] = name.Substring(0, end);
                 if (type == '\0' || type == name[end])
                 {
                     type = name[end];
@@ -211,27 +211,27 @@ namespace NDesk.Options.Fork
                 return OptionValueType.None;
             }
 
-            if (this.MaxValueCount <= 1 && seps.Count != 0)
+            if (MaxValueCount <= 1 && seps.Count != 0)
             {
                 throw new ArgumentException(
                     string.Format(
                         "Cannot provide key/value separators for Options taking {0} value(s).",
-                        this.MaxValueCount));
+                        MaxValueCount));
             }
 
-            if (this.MaxValueCount > 1)
+            if (MaxValueCount > 1)
             {
                 if (seps.Count == 0)
                 {
-                    this.ValueSeparators = new[] { ":", "=" };
+                    ValueSeparators = new[] { ":", "=" };
                 }
                 else if (seps.Count == 1 && seps[0].Length == 0)
                 {
-                    this.ValueSeparators = null;
+                    ValueSeparators = null;
                 }
                 else
                 {
-                    this.ValueSeparators = seps.ToArray();
+                    ValueSeparators = seps.ToArray();
                 }
             }
 

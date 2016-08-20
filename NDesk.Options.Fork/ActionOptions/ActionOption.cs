@@ -1,7 +1,7 @@
 namespace NDesk.Options.Fork.ActionOptions
 {
     using System;
-    using NDesk.Options.Fork.Common;
+    using Common;
 
     internal class ActionOption : Option
     {
@@ -20,7 +20,7 @@ namespace NDesk.Options.Fork.ActionOptions
 
         protected override void OnParseComplete(OptionContext c)
         {
-            this.action(c.OptionValues);
+            action(c.OptionValues);
         }
     }
 }

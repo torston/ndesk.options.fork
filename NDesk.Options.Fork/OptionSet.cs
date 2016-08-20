@@ -1,15 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Linq;
-using NDesk.Options.Fork.Common;
-using NDesk.Options.Fork.ActionOptions;
-
 namespace NDesk.Options.Fork
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Linq;
+    using Common;
+    using ActionOptions;
+
     public class OptionSet : KeyedCollection<string, Option>
     {
         private const int OptionWidth = 29;
@@ -23,7 +23,7 @@ namespace NDesk.Options.Fork
 
         public OptionSet(Converter<string, string> localizer)
         {
-            this.MessageLocalizer = localizer;
+            MessageLocalizer = localizer;
         }
 
         public Converter<string, string> MessageLocalizer { get; set; }
@@ -48,26 +48,26 @@ namespace NDesk.Options.Fork
         protected override void InsertItem(int index, Option item)
         {
             base.InsertItem(index, item);
-            this.AddImpl(item);
+            AddImpl(item);
         }
 
         protected override void RemoveItem(int index)
         {
             base.RemoveItem(index);
-            var p = this.Items[index];
+            var p = Items[index];
 
             // KeyedCollection.RemoveItem() handles the 0th item
             for (var i = 1; i < p.Names.Length; ++i)
             {
-                this.Dictionary.Remove(p.Names[i]);
+                Dictionary.Remove(p.Names[i]);
             }
         }
 
         protected override void SetItem(int index, Option item)
         {
             base.SetItem(index, item);
-            this.RemoveItem(index);
-            this.AddImpl(item);
+            RemoveItem(index);
+            AddImpl(item);
         }
 
         private void AddImpl(Option option)
@@ -83,7 +83,7 @@ namespace NDesk.Options.Fork
                 // KeyedCollection.InsertItem/SetItem handle the 0th name.
                 for (var i = 1; i < option.Names.Length; ++i)
                 {
-                    this.Dictionary.Add(option.Names[i], option);
+                    Dictionary.Add(option.Names[i], option);
                     added.Add(option.Names[i]);
                 }
             }
@@ -91,7 +91,7 @@ namespace NDesk.Options.Fork
             {
                 foreach (var name in added)
                 {
-                    this.Dictionary.Remove(name);
+                    Dictionary.Remove(name);
                 }
 
                 throw;
@@ -106,7 +106,7 @@ namespace NDesk.Options.Fork
 
         public OptionSet Add(string prototype, Action<string> action)
         {
-            return this.Add(prototype, null, action);
+            return Add(prototype, null, action);
         }
 
         public OptionSet Add(string prototype, string description, Action<string> action)
@@ -123,7 +123,7 @@ namespace NDesk.Options.Fork
 
         public OptionSet Add(string prototype, OptionAction<string, string> action)
         {
-            return this.Add(prototype, null, action);
+            return Add(prototype, null, action);
         }
 
         public OptionSet Add(string prototype, string description, OptionAction<string, string> action)
@@ -144,22 +144,22 @@ namespace NDesk.Options.Fork
 
         public OptionSet Add<T>(string prototype, Action<T> action)
         {
-            return this.Add(prototype, null, action);
+            return Add(prototype, null, action);
         }
 
         public OptionSet Add<T>(string prototype, string description, Action<T> action)
         {
-            return this.Add(new ActionOption<T>(prototype, description, action));
+            return Add(new ActionOption<T>(prototype, description, action));
         }
 
         public OptionSet Add<TKey, TValue>(string prototype, OptionAction<TKey, TValue> action)
         {
-            return this.Add(prototype, null, action);
+            return Add(prototype, null, action);
         }
 
         public OptionSet Add<TKey, TValue>(string prototype, string description, OptionAction<TKey, TValue> action)
         {
-            return this.Add(new ActionOption<TKey, TValue>(prototype, description, action));
+            return Add(new ActionOption<TKey, TValue>(prototype, description, action));
         }
 
         protected virtual OptionContext CreateOptionContext()
@@ -169,11 +169,11 @@ namespace NDesk.Options.Fork
 
         public List<string> Parse(IEnumerable<string> arguments)
         {
-            var c = this.CreateOptionContext();
+            var c = CreateOptionContext();
             c.OptionIndex = -1;
             var process = true;
             var unprocessed = new List<string>();
-            var def = this.Contains("<>") ? this["<>"] : null;
+            var def = Contains("<>") ? this["<>"] : null;
             foreach (var argument in arguments)
             {
                 ++c.OptionIndex;
@@ -189,10 +189,10 @@ namespace NDesk.Options.Fork
                     continue;
                 }
 
-                if (!this.Parse(argument, c))
+                if (!Parse(argument, c))
                 {
                     // is it a bundled option?
-                    var collection = this.ParceBundle(argument, c);
+                    var collection = ParceBundle(argument, c);
 
                     if (collection == null)
                     {
@@ -237,7 +237,7 @@ namespace NDesk.Options.Fork
             }
 
             flag = name = sep = value = null;
-            var m = this.valueOption.Match(argument);
+            var m = valueOption.Match(argument);
             if (!m.Success)
             {
                 return false;
@@ -258,17 +258,17 @@ namespace NDesk.Options.Fork
         {
             if (c.Option != null)
             {
-                this.ParseValue(argument, c);
+                ParseValue(argument, c);
                 return true;
             }
 
             string f, n, s, v;
-            if (!this.GetOptionParts(argument, out f, out n, out s, out v))
+            if (!GetOptionParts(argument, out f, out n, out s, out v))
             {
                 return false;
             }
 
-            if (this.Contains(n))
+            if (Contains(n))
             {
                 var p = this[n];
                 c.OptionName = f + n;
@@ -282,7 +282,7 @@ namespace NDesk.Options.Fork
 
                     case OptionValueType.Optional:
                     case OptionValueType.Required:
-                        this.ParseValue(v, c);
+                        ParseValue(v, c);
                         break;
 
                     default:
@@ -294,7 +294,7 @@ namespace NDesk.Options.Fork
 
             // no match; is it a bool option?
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            return this.ParseBool(argument, n, c);
+            return ParseBool(argument, n, c);
         }
 
         private Dictionary<string, bool> ParceBundle(string argument, OptionContext c)
@@ -302,7 +302,7 @@ namespace NDesk.Options.Fork
             string f, n, s, v;
             var result = new Dictionary<string,bool>();
 
-            if (!this.GetOptionParts(argument, out f, out n, out s, out v))
+            if (!GetOptionParts(argument, out f, out n, out s, out v))
             {
                 return null;
             }
@@ -316,7 +316,7 @@ namespace NDesk.Options.Fork
             {
                 var opt = f + n[i];
                 var rn = n[i].ToString();
-                if (!this.Contains(rn))
+                if (!Contains(rn))
                 {
                     result.Add(opt,false);
                     continue;
@@ -336,7 +336,7 @@ namespace NDesk.Options.Fork
                             var option = n.Substring(i + 1);
                             c.Option = p;
                             c.OptionName = opt;
-                            this.ParseValue(option.Length != 0 ? option : null, c);
+                            ParseValue(option.Length != 0 ? option : null, c);
                             result.Add(opt, true);
                         }
                         break;
@@ -368,7 +368,7 @@ namespace NDesk.Options.Fork
             else if (c.OptionValues.Count > c.Option.MaxValueCount)
             {
                 throw new OptionException(
-                    this.MessageLocalizer(
+                    MessageLocalizer(
                         string.Format(
                             "Error: Found {0} option values when expecting {1}.",
                             c.OptionValues.Count,
@@ -381,7 +381,7 @@ namespace NDesk.Options.Fork
         {
             string rn;
             if (n.Length < 1 || (n[n.Length - 1] != '+' && n[n.Length - 1] != '-')
-                || !this.Contains(rn = n.Substring(0, n.Length - 1)))
+                || !Contains(rn = n.Substring(0, n.Length - 1)))
             {
                 return false;
             }
@@ -408,7 +408,7 @@ namespace NDesk.Options.Fork
             foreach (var p in this)
             {
                 var written = 0;
-                if (!this.WriteOptionPrototype(o, p, ref written))
+                if (!WriteOptionPrototype(o, p, ref written))
                 {
                     continue;
                 }
@@ -423,7 +423,7 @@ namespace NDesk.Options.Fork
                     o.Write(new string(' ', OptionWidth));
                 }
 
-                var lines = GetLines(this.MessageLocalizer(GetDescription(p.Description)));
+                var lines = GetLines(MessageLocalizer(GetDescription(p.Description)));
                 o.WriteLine(lines[0]);
                 var prefix = new string(' ', OptionWidth + 2);
                 for (var i = 1; i < lines.Count; ++i)
@@ -466,22 +466,22 @@ namespace NDesk.Options.Fork
             {
                 if (p.OptionValueType == OptionValueType.Optional)
                 {
-                    Write(o, ref written, this.MessageLocalizer("["));
+                    Write(o, ref written, MessageLocalizer("["));
                 }
 
-                Write(o, ref written, this.MessageLocalizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
+                Write(o, ref written, MessageLocalizer("=" + GetArgumentName(0, p.MaxValueCount, p.Description)));
                 var sep = p.ValueSeparators != null && p.ValueSeparators.Length > 0 ? p.ValueSeparators[0] : " ";
                 for (var c = 1; c < p.MaxValueCount; ++c)
                 {
                     Write(
                         o,
                         ref written,
-                        this.MessageLocalizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
+                        MessageLocalizer(sep + GetArgumentName(c, p.MaxValueCount, p.Description)));
                 }
 
                 if (p.OptionValueType == OptionValueType.Optional)
                 {
-                    Write(o, ref written, this.MessageLocalizer("]"));
+                    Write(o, ref written, MessageLocalizer("]"));
                 }
             }
 

@@ -14,19 +14,19 @@ namespace NDesk.Options.Fork.Common
         public OptionException(string message, string optionName)
             : base(message)
         {
-            this.OptionName = optionName;
+            OptionName = optionName;
         }
 
         public OptionException(string message, string optionName, Exception innerException)
             : base(message, innerException)
         {
-            this.OptionName = optionName;
+            OptionName = optionName;
         }
 
         protected OptionException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            this.OptionName = info.GetString("OptionName");
+            OptionName = info.GetString("OptionName");
         }
 
         public string OptionName { get; set; }
@@ -35,7 +35,7 @@ namespace NDesk.Options.Fork.Common
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("OptionName", this.OptionName);
+            info.AddValue("OptionName", OptionName);
         }
     }
 }
