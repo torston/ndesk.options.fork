@@ -51,9 +51,9 @@ namespace NDesk.Options.Fork.Test
 
         }
 
-        [TestCase("s", new[] { "-s2", "/status2", "--status2", "/s2", "unknown", "12", "s", "status" })]
-        [TestCase("status", new[] { "-s2", "/status2", "--status2", "/s2", "unknown", "12", "s", "status" })]
-        [TestCase("s|status", new[] { "-s2", "/status2", "--status2", "/s2", "unknown", "12", "s", "status" })]
+        [TestCase("s", new[] { "-f", "/status2", "--status2", "/s2", "unknown", "12", "s", "status" })]
+        [TestCase("status", new[] { "-f", "/status2", "--status2", "/s2", "unknown", "12", "s", "status" })]
+        [TestCase("s|status", new[] { "-f", "/status2", "--status2", "/s2", "unknown", "12", "s", "status" })]
         public void UnexpectedArguments(string optionCreate, string[] input)
         {
             // arrange
