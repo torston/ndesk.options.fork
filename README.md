@@ -47,11 +47,8 @@ Unknown argument: 12
  
  // You can call only with long argument: --name "Morty"
  p.Add("name=", n => Console.WriteLine("First Name: " + n));
- 
- // If you use '=' parametr is required: -s "Sanchez"
-  p.Add("s|surname=", a => Console.WriteLine("Last Name:" + a));
   
-  // Bool options usage: -s
+  // Bool options usage: -s, you dont need `=` in case of bool option
   p.Add("s|isSmart", s => Console.WriteLine(s != null));
   
   // Int options usage: -a 11
