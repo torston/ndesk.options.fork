@@ -18,5 +18,5 @@ build_script:
   - cmd: ECHO nuget pack nuget\NDesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
   - cmd: nuget pack nuget\NDesk.Options.Fork.nuspec -version "%GitVersion_NuGetVersion%" -prop "configuration=%CONFIGURATION%"
   - cmd: if ["%CONFIGURATION%"] == ["Release"] appveyor PushArtifact "NDesk.Options.Fork.%GitVersion_NuGetVersion%.nupkg"
-  - cmd: appveyor PushArtifact "NDesk.Options.Fork\bin\Release\NDesk.Options.Fork.dll"
-  - cmd:  if ["%CONFIGURATION%"] == ["Debug"] appveyor PushArtifact "NDesk.Options.Fork\bin\Release\NDesk.Options.Fork.pdb"
+  - cmd: appveyor PushArtifact "NDesk.Options.Fork\bin\%CONFIGURATION%\NDesk.Options.Fork.dll"
+  - cmd:  if ["%CONFIGURATION%"] == ["Debug"] appveyor PushArtifact "NDesk.Options.Fork\bin\%CONFIGURATION%\NDesk.Options.Fork.pdb"
