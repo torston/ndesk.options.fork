@@ -2,7 +2,9 @@ install:
   - choco install gitversion.portable -pre -y
   - choco install gitlink -y
 
-configuration: Release
+configuration: 
+  - Release
+  - Debug
 
 build_script:
   - cmd: nuget restore NDesk.Options.Fork\NDesk.Options.Fork.sln
