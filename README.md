@@ -1,9 +1,7 @@
 # NDesk.Options.Fork
 
-## Build Status
-#### Master Branch: [![Build status](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master?svg=true)](https://ci.appveyor.com/project/torston/ndesk-options-fork/branch/master) 
-#### Tests: [![Test status](http://flauschig.ch/batch.php?type=tests&account=torston&slug=ndesk-options-fork)](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master)
-#### NuGet: [![NuGet version](https://badge.fury.io/nu/Ndesk.Options.Fork.svg)](https://badge.fury.io/nu/Ndesk.Options.Fork)
+### Build Status
+[![Build status](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master?svg=true)](https://ci.appveyor.com/project/torston/ndesk-options-fork/branch/master) [![Test status](http://flauschig.ch/batch.php?type=tests&account=torston&slug=ndesk-options-fork)](https://ci.appveyor.com/api/projects/status/9rkhbjxrka6ra66a/branch/master) [![NuGet version](https://badge.fury.io/nu/Ndesk.Options.Fork.svg)](https://badge.fury.io/nu/Ndesk.Options.Fork)
 ## Description
 This repository is the fork of NDesk.Options 0.2.1 (callback-based program option parser for C#).
 
