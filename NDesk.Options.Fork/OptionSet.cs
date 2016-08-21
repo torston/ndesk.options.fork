@@ -116,7 +116,7 @@ namespace NDesk.Options.Fork
                 throw new ArgumentNullException("action");
             }
 
-            Option p = new ActionOption(prototype, description, 1, delegate(OptionValueCollection v) { action(v[0]); });
+            Option p = new ActionOption(prototype, description, 1, delegate (OptionValueCollection v) { action(v[0]); });
             base.Add(p);
             return this;
         }
@@ -137,7 +137,7 @@ namespace NDesk.Options.Fork
                 prototype,
                 description,
                 2,
-                delegate(OptionValueCollection v) { action(v[0], v[1]); });
+                delegate (OptionValueCollection v) { action(v[0], v[1]); });
             base.Add(p);
             return this;
         }
@@ -192,18 +192,15 @@ namespace NDesk.Options.Fork
                 if (!Parse(argument, c))
                 {
                     // is it a bundled option?
-                    var collection = ParceBundle(argument, c);
+                    var unprocessedBundleOptions = ParceBundle(argument, c);
 
-                    if (collection == null)
+                    if (unprocessedBundleOptions == null)
                     {
                         Unprocessed(unprocessed, def, c, argument);
                     }
                     else
                     {
-                        foreach (var pair in collection.Where(pair => !pair.Value))
-                        {
-                            Unprocessed(unprocessed, def, c, pair.Key);
-                        }
+                        unprocessedBundleOptions.ForEach(ar => Unprocessed(unprocessed, def, c, ar));
                     }
                 }
             }
@@ -297,10 +294,10 @@ namespace NDesk.Options.Fork
             return ParseBool(argument, n, c);
         }
 
-        private Dictionary<string, bool> ParceBundle(string argument, OptionContext c)
+        private List<string> ParceBundle(string argument, OptionContext c)
         {
             string f, n, s, v;
-            var result = new Dictionary<string,bool>();
+            var result = new List<string>();
 
             if (!GetOptionParts(argument, out f, out n, out s, out v))
             {
@@ -318,7 +315,7 @@ namespace NDesk.Options.Fork
                 var rn = n[i].ToString();
                 if (!Contains(rn))
                 {
-                    result.Add(opt,false);
+                    result.Add(opt);
                     continue;
                 }
 
@@ -327,7 +324,6 @@ namespace NDesk.Options.Fork
                 {
                     case OptionValueType.None:
                         Invoke(c, opt, n, p);
-                        result.Add(opt, true);
                         break;
 
                     case OptionValueType.Optional:
@@ -337,7 +333,6 @@ namespace NDesk.Options.Fork
                             c.Option = p;
                             c.OptionName = opt;
                             ParseValue(option.Length != 0 ? option : null, c);
-                            result.Add(opt, true);
                         }
                         break;
 
