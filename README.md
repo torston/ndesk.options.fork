@@ -16,11 +16,11 @@ var p = new OptionSet ()
 ```
 2) Add argumets
 ```c#
-p.Add("s|status", n => Console.WriteLine("Status is "+ n));
+p.Add("s|status=", n => Console.WriteLine("Status is "+ n));
 ```
 3) If it find your argument the lambda will called, othewise it will return it back
 ```c#
-var unexpectedArguments = p.Parce(argsArray);
+var unexpectedArguments = p.Parse(argsArray);
 
 foreach(var arg in unexpectedArguments)
 {
@@ -44,10 +44,10 @@ Unknown argument: 12
  var p = new OptionSet ()
  
  // You can call: -n "Rick" or --name "Morty"
- p.Add("n|name", n => Console.WriteLine(n));
+ p.Add("n|name=", n => Console.WriteLine(n));
  
  // You can call only with long argument: --name "Morty"
- p.Add("name", n => Console.WriteLine("First Name: " + n));
+ p.Add("name=", n => Console.WriteLine("First Name: " + n));
  
  // If you use '=' parametr is required: -s "Sanchez"
   p.Add("s|surname=", a => Console.WriteLine("Last Name:" + a));
@@ -56,7 +56,7 @@ Unknown argument: 12
   p.Add("s|isSmart", s => Console.WriteLine(s != null));
   
   // Int options usage: -a 11
-  p.Add("a|age", (int a) => Console.WriteLine("Age: " + s));
+  p.Add("a|age=", (int a) => Console.WriteLine("Age: " + s));
  ```
 ### Parce options
 ```c#
