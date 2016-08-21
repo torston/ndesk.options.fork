@@ -14,7 +14,7 @@ Original project documentation: http://www.ndesk.org/doc/ndesk-options/NDesk.Opt
 ```c#
 var p = new OptionSet ()
 ```
-2) Add argumets
+2) Add argumets ( Important: if you need to get value in lambda you need `=` like: `g|game=`)
 ```c#
 p.Add("s|status=", n => Console.WriteLine("Status is "+ n));
 ```
