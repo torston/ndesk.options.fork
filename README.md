@@ -74,3 +74,6 @@ Age: 13
 Unknown argument: --sex
 Unknown argument: male
 ```
+#### License
+
+The project is licensed under the [MIT](https://opensource.org/licenses/mit-license.php) license.
